@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Modern Weather Dashboard — real-time weather and 5-day forecast powered by OpenWeatherMap."
+    />
+    <title>Weather Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwmg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body class="theme-default" data-theme="default">
+    <!-- ───────────────────────────── TOAST NOTIFICATION ───────────────────────────── -->
+    <div
+      id="toast"
+      class="toast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <i class="toast__icon fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+      <span id="toast-message" class="toast__message"></span>
+    </div>
+
+    <!-- ───────────────────────────── APP WRAPPER ───────────────────────────── -->
+    <div class="app" id="app">
+
+      <!-- ── HEADER / SEARCH ── -->
+      <header class="header" role="banner">
+        <div class="header__brand">
+          <i class="fa-solid fa-cloud-sun" aria-hidden="true"></i>
+          <span>WeatherDash</span>
+        </div>
+
+        <form
+          class="search-form"
+          id="search-form"
+          role="search"
+          aria-label="Search for a city"
+        >
+          <div class="search-form__input-wrap">
+            <i
+              class="fa-solid fa-magnifying-glass search-form__icon"
+              aria-hidden="true"
+            ></i>
+            <input
+              type="search"
+              id="search-input"
+              class="search-form__input"
+              placeholder="Search city…"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="City name"
+              maxlength="100"
+            />
+          </div>
+
+          <button type="submit" class="btn btn--primary" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <span>Search</span>
+          </button>
+
+          <button
+            type="button"
+            id="geo-btn"
+            class="btn btn--secondary"
+            aria-label="Use my location"
+            title="Use my current location"
+          >
+            <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+            <span class="sr-only">My Location</span>
+          </button>
+        </form>
+      </header>
+
+      <!-- ── MAIN CONTENT ── -->
+      <main class="main" id="main-content" role="main">
+
+        <!-- Loading Spinner (shown while fetching) -->
+        <div id="loading" class="loading" aria-live="polite" aria-label="Loading weather data" hidden>
+          <p class="loading__text">Fetching weather data…</p>
+        </div>
+
+        <!-- ── CURRENT WEATHER CARD ── -->
+        <section
+          id="current-weather"
+          class="card current-weather"
+          aria-label="Current weather"
+          hidden
+        >
+          <div class="current-weather__top">
+            <div class="current-weather__location">
+              <h1 id="cw-city" class="current-weather__city"></h1>
+              <p id="cw-date" class="current-weather__date"></p>
+            </div>
+            <div class="current-weather__icon-wrap">
+              <span
+                id="cw-icon"
+                class="current-weather__icon"
+                role="img"
+                aria-label=""
+              ></span>
+            </div>
+          </div>
+
+          <div class="current-weather__body">
+            <div class="current-weather__temp-block">
+              <span id="cw-temp" class="current-weather__temp"></span>
+              <span class="current-weather__unit">°C</span>
+            </div>
+            <p id="cw-description" class="current-weather__description"></p>
+          </div>
+
+          <div class="current-weather__details" aria-label="Weather details">
+            <div class="detail-chip">
+              <i class="fa-solid fa-temperature-half detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">Feels like</span>
+                <span id="cw-feels" class="detail-chip__value"></span>
+              </div>
+            </div>
+            <div class="detail-chip">
+              <i class="fa-solid fa-droplet detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">Humidity</span>
+                <span id="cw-humidity" class="detail-chip__value"></span>
+              </div>
+            </div>
+            <div class="detail-chip">
+              <i class="fa-solid fa-wind detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">Wind</span>
+                <span id="cw-wind" class="detail-chip__value"></span>
+              </div>
+            </div>
+            <div class="detail-chip">
+              <i class="fa-solid fa-gauge detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">Pressure</span>
+                <span id="cw-pressure" class="detail-chip__value"></span>
+              </div>
+            </div>
+            <div class="detail-chip">
+              <i class="fa-solid fa-eye detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">Visibility</span>
+                <span id="cw-visibility" class="detail-chip__value"></span>
+              </div>
+            </div>
+            <div class="detail-chip">
+              <i class="fa-solid fa-sun detail-chip__icon" aria-hidden="true"></i>
+              <div>
+                <span class="detail-chip__label">UV Index</span>
+                <span id="cw-uv" class="detail-chip__value">N/A</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── 5-DAY FORECAST ── -->
+        <section
+          id="forecast"
+          class="card forecast"
+          aria-label="5-day weather forecast"
+          hidden
+        >
+          <h2 class="forecast__title">
+            <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+            5-Day Forecast
+          </h2>
+          <div id="forecast-grid" class="forecast__grid" role="list"></div>
+        </section>
+
+        <!-- ── EMPTY / WELCOME STATE ── -->
+        <div id="welcome" class="welcome" aria-label="Welcome screen">
+          <div class="welcome__icon">
+            <i class="fa-solid fa-cloud-sun-rain" aria-hidden="true"></i>
+          </div>
+          <h2 class="welcome__title">What's the weather like?</h2>
+          <p class="welcome__subtitle">
+            Search for any city above, or use your current location to get
+            started.
+          </p>
+        </div>
+
+      </main>
+
+      <!-- ── FOOTER ── -->
+      <footer class="footer" role="contentinfo">
+        <p>
+          Powered by
+          <a
+            href="https://openweathermap.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OpenWeatherMap</a
+          >
+        </p>
+      </footer>
+
+    </div><!-- /.app -->
+
+    <script src="app.js"></script>
+  </body>
+</html>
